@@ -1,4 +1,5 @@
 from tkinter import Tk, BOTH, Canvas
+from typing import Type
 
 
 class Window():
@@ -21,7 +22,7 @@ class Window():
             self.redraw()
         print("window closed...")
 
-    def draw_line(self, line, fill_color="black"):
+    def draw_line(self, line: Line, fill_color="black"):
         line.draw(self.__canvas, fill_color)
 
     def close(self):
@@ -39,7 +40,7 @@ class Line():
         self.p1 = p1
         self.p2 = p2
 
-    def draw(self, canvas, fill_color="black"):
+    def draw(self, canvas: Window, fill_color="black"):
         canvas.create_line(
             self.p1.x, self.p1.y,
             self.p2.x, self.p2.y,
