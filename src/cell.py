@@ -13,6 +13,7 @@ class Cell:
         self.has_right_wall = True
         self.has_top_wall = True
         self.has_bottom_wall = True
+        self.visited = False
 
     def draw(self, x1, y1, x2, y2):
         if self._win is None:
@@ -27,12 +28,24 @@ class Cell:
         lower_right = Point(self._x2, self._y2)
         if self.has_top_wall:
             self._win.draw_line(Line(upper_left, upper_right))
+        else:
+            line = Line(upper_left, upper_right)
+            self._win.draw_line(line, "white")
         if self.has_left_wall:
             self._win.draw_line(Line(upper_left, lower_left))
+        else:
+            line = Line(upper_left, lower_left)
+            self._win.draw_line(line, "white")
         if self.has_right_wall:
             self._win.draw_line(Line(upper_right, lower_right))
+        else:
+            line = Line(upper_right, lower_right)
+            self._win.draw_line(line, "white")
         if self.has_bottom_wall:
             self._win.draw_line(Line(lower_left, lower_right))
+        else:
+            line = Line(lower_left, lower_right)
+            self._win.draw_line(line, "white")
 
     def draw_move(self, to_cell, undo: Optional[bool] = False):
         # We must force integer on the grid, so we can not

@@ -2,19 +2,21 @@ from cell import Cell
 from graphics import Window
 from typing import Optional
 import time
+import random
 
 
 class Maze:
 
     def __init__(
         self,
-        x1,
-        y1,
-        num_rows,
-        num_cols,
-        cell_size_x,
-        cell_size_y,
-        win: Optional[Window] = None
+        x1: int,
+        y1: int,
+        num_rows: int,
+        num_cols: int,
+        cell_size_x: int,
+        cell_size_y: int,
+        win: Optional[Window] = None,
+        seed: Optional[int] = None,
     ):
         self._cells = []
         self._x1 = x1
@@ -24,8 +26,13 @@ class Maze:
         self._cell_size_x = cell_size_x
         self._cell_size_y = cell_size_y
         self._win = win
+        # random.seed() uses system time as the seed if it is None
+        if seed:
+            random.seed(seed)
 
         self._create_cells()
+        self._break_entrance_and_exit()
+        self._break_walls_r(0, 0)
 
     def _create_cells(self):
         for i in range(self._num_cols):
@@ -47,8 +54,62 @@ class Maze:
         self._cells[i][j].draw(x1, y1, x2, y2)
         self._animate()
 
+    def _break_entrance_and_exit(self):
+        self._cells[0][0].has_top_wall = False
+        self._draw_cell(0, 0)
+        last_col = self._num_cols - 1
+        last_row = self._num_rows - 1
+        self._cells[last_col][last_row].has_bottom_wall = False
+        self._draw_cell(last_col, last_row)
+
     def _animate(self):
         if self._win is None:
             return
         self._win.redraw()
-        time.sleep(0.05)
+        time.sleep(0.02)
+
+    def _break_walls_r(self, i, j):
+        self._cells[i][j].visited = True
+
+        while True:
+            to_visit = []
+
+            # check north neighbor
+            if j > 0 and not self._cells[i][j - 1].visited:
+                to_visit.append((i, j - 1, "north"))
+
+            # check south neighbor
+            if j < self._num_rows - 1 and not self._cells[i][j + 1].visited:
+                to_visit.append((i, j + 1, "south"))
+
+            # check east neighbor
+            if i < self._num_cols - 1 and not self._cells[i + 1][j].visited:
+                to_visit.append((i + 1, j, "east"))
+
+            # check west neighbor
+            if i > 0 and not self._cells[i - 1][j].visited:
+                to_visit.append((i - 1, j, "west"))
+
+            if len(to_visit) == 0:
+                self._draw_cell(i, j)
+                return
+
+            direction = random.randrange(len(to_visit))
+            neigh = to_visit[direction]
+            print(f"Chosen direction: {
+                  neigh[2]} to cell ({neigh[0]}, {neigh[1]})")
+
+            if neigh[2] == "north":
+                self._cells[i][j].has_top_wall = False
+                self._cells[neigh[0]][neigh[1]].has_bottom_wall = False
+            if neigh[2] == "south":
+                self._cells[i][j].has_bottom_wall = False
+                self._cells[neigh[0]][neigh[1]].has_top_wall = False
+            if neigh[2] == "east":
+                self._cells[i][j].has_right_wall = False
+                self._cells[neigh[0]][neigh[1]].has_left_wall = False
+            if neigh[2] == "west":
+                self._cells[i][j].has_left_wall = False
+                self._cells[neigh[0]][neigh[1]].has_right_wall = False
+
+            self._break_walls_r(neigh[0], neigh[1])
