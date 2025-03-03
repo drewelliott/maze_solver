@@ -1,4 +1,6 @@
 from cell import Cell
+from graphics import Window
+from typing import Optional
 import time
 
 
@@ -12,7 +14,7 @@ class Maze:
         num_cols,
         cell_size_x,
         cell_size_y,
-        win
+        win: Optional[Window] = None
     ):
         self._cells = []
         self._x1 = x1
