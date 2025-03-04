@@ -33,6 +33,7 @@ class Maze:
         self._create_cells()
         self._break_entrance_and_exit()
         self._break_walls_r(0, 0)
+        self._reset_cells_visited()
 
     def _create_cells(self):
         for i in range(self._num_cols):
@@ -96,8 +97,6 @@ class Maze:
 
             direction = random.randrange(len(to_visit))
             neigh = to_visit[direction]
-            print(f"Chosen direction: {
-                  neigh[2]} to cell ({neigh[0]}, {neigh[1]})")
 
             if neigh[2] == "north":
                 self._cells[i][j].has_top_wall = False
@@ -113,3 +112,8 @@ class Maze:
                 self._cells[neigh[0]][neigh[1]].has_right_wall = False
 
             self._break_walls_r(neigh[0], neigh[1])
+
+    def _reset_cells_visited(self):
+        for i in range(self._num_cols):
+            for j in range(self._num_rows):
+                self._cells[i][j].visited = False
