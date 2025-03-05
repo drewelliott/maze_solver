@@ -117,3 +117,50 @@ class Maze:
         for col in self._cells:
             for cell in col:
                 cell.visited = False
+
+    def solve(self):
+        self._solve_r(0, 0)
+
+    def _solve_r(self, i, j):
+        end_cell = self._cells[self._num_cols - 1][self._num_rows - 1]
+        self._animate()
+        self._cells[i][j].visited = True
+
+        if self._cells[i][j] == end_cell:
+            return True
+
+        else:
+            if self._cells[i][j - 1] and self._cells[i][j - 1].has_bottom_wall and not self._cells[i][j - 1].visited:
+                print(f"north check: bottom wall {self._cells[i][j - 1]} (should be false)")
+                self._cells[i][j].draw_move(self._cells[i][j - 1])
+                cell_status = self._solve_r(i, j - 1)
+                if cell_status:
+                    return True
+                else:
+                   self._cells[i][j - 1].draw_move(self._cells[i][j - 1], True)
+            elif self._cells[i][j + 1] and self._cells[i][j + 1].has_top_wall and not self._cells[i][j + 1].visited:
+                print(f"south check: top wall {self._cells[i][j + 1]} (should be false)")
+                self._cells[i][j].draw_move(self._cells[i][j + 1])
+                cell_status = self._solve_r(i, j + 1)
+                if cell_status:
+                    return True
+                else:
+                   self._cells[i][j + 1].draw_move(self._cells[i][j + 1], True)
+            elif self._cells[i - 1][j] and self._cells[i - 1][j].has_right_wall and not self._cells[i - 1][j].visited:
+                print(f"east check: right wall {self._cells[i - 1][j]} (should be false)")
+                self._cells[i][j].draw_move(self._cells[i - 1][j])
+                cell_status = self._solve_r(i - 1, j)
+                if cell_status:
+                    return True
+                else:
+                   self._cells[i - 1][j].draw_move(self._cells[i - 1][j], True)
+            elif self._cells[i + 1][j] and self._cells[i + 1][j].has_left_wall and not self._cells[i + 1][j].visited:
+                print(f"west check: left wall {self._cells[i + 1][j]} (should be false)")
+                self._cells[i][j].draw_move(self._cells[i + 1][j])
+                cell_status = self._solve_r(i + 1, j)
+                if cell_status:
+                    return True
+                else:
+                   self._cells[i + 1][j].draw_move(self._cells[i + 1][j], True)
+                
+        return False
